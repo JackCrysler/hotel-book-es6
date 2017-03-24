@@ -228,6 +228,7 @@ table {
     .list-main .hotel-list dt {
       width: 70px;
       height: 70px;
+      flex: none;
       margin: 8px 10px 8px 0; }
       .list-main .hotel-list dt img {
         width: 100%;

@@ -376,19 +376,17 @@ document.querySelector('.modify-date').onclick = function () {
 _tools.loading.startLoading('.container');
 
 //请求列表数据
-
-
 var wait = new Promise(function (resolve, reject) {
 	(0, _tools.ajax)({
 		url: '../../server/hotel.json',
 		callback: function callback(data) {
-			var arr = [0, 2, 3, 4, 5];
+			var star = [0, 2, 3, 4, 5];
 			function random(max, min) {
 				return Math.floor(Math.random() * (max - min + 1)) + min;
 			}
 
 			data.data = data.data.map(function (value, index) {
-				value.rank = arr[random(4, 0)];
+				value.rank = star[random(4, 0)];
 				return value;
 			});
 
@@ -398,22 +396,68 @@ var wait = new Promise(function (resolve, reject) {
 });
 
 //列表模板
-function tpl(name, price, addr, district, rank) {
-	return '<dl data-region="' + district + '" data-rank="' + rank + '">\n\t\t\t\t<dt><img src="../img/fullimage1.jpg" alt=""></dt>\n\t\t\t\t<dd>\n\t\t\t\t\t<h4>' + name + '</h4>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="point">4.7\u5206</span>\n\t\t\t\t\t\t<span class="price"><em>\uFFE5' + price + '</em><small>\u8D77</small></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="rank">' + rank + '\u661F</span>\n\t\t\t\t\t\t<span class="icon iconfont icon-wifi"></span>\n\t\t\t\t\t\t<span class="icon iconfont icon-p"></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="location">' + addr + '</span>\n\t\t\t\t\t\t<span class="distance"> </span>\n\t\t\t\t\t</p>\n\t\t\t\t</dd>\n\t\t\t</dl>';
-}
+function tpl(type, name, price, addr, district, rank) {
+	if (type == 'string') {
 
+		return '<dl data-region="' + district + '" data-rank="' + rank + '" data-price="' + price + '">\n\t\t\t\t<dt><img src="../img/fullimage1.jpg" alt=""></dt>\n\t\t\t\t<dd>\n\t\t\t\t\t<h4>' + name + '</h4>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="point">4.7\u5206</span>\n\t\t\t\t\t\t<span class="price"><em>\uFFE5' + price + '</em><small>\u8D77</small></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="rank">' + rank + '\u661F</span>\n\t\t\t\t\t\t<span class="icon iconfont icon-wifi"></span>\n\t\t\t\t\t\t<span class="icon iconfont icon-p"></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="location">' + addr + '</span>\n\t\t\t\t\t\t<span class="distance"> </span>\n\t\t\t\t\t</p>\n\t\t\t\t</dd>\n\t\t\t\t\t</dl>';
+	}
+	if (type == 'dom') {
+		var ele = document.createElement('dl');
+		ele.setAttribute('data-rank', rank);
+		ele.setAttribute('data-price', price);
+		ele.setAttribute('data-region', district);
+		ele.innerHTML = '<dt><img src="../img/fullimage1.jpg" alt=""></dt>\n\t\t\t\t<dd>\n\t\t\t\t\t<h4>' + name + '</h4>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="point">4.7\u5206</span>\n\t\t\t\t\t\t<span class="price"><em>\uFFE5' + price + '</em><small>\u8D77</small></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="rank">' + rank + '\u661F</span>\n\t\t\t\t\t\t<span class="icon iconfont icon-wifi"></span>\n\t\t\t\t\t\t<span class="icon iconfont icon-p"></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="location">' + addr + '</span>\n\t\t\t\t\t\t<span class="distance"> </span>\n\t\t\t\t\t</p>\n\t\t\t\t</dd>';
+		return ele;
+	}
+}
+//根据模板渲染数据
 wait.then(function (data) {
 
 	var data_list = data.data;
 
 	data_list = data_list.map(function (value, index) {
-		return tpl(value.name, value.price, value.addr, value.district, value.rank);
+		return tpl('string', value.name, value.price, value.addr, value.district, value.rank);
 	});
 	//数据返回停止加载动画
 	_tools.loading.stopLoading();
 	//将渲染完成的list数据添加至列表
 	document.querySelector('.hotel-list').innerHTML = data_list.join('');
+
+	hl_height = document.querySelector('.hotel-list').offsetHeight;
 });
+//滚动加载更多
+//
+var hl_height = 0;
+var pd_height = document.querySelector('.pick-date').offsetHeight;
+var list_main = document.querySelector('.list-main');
+var view_height = list_main.offsetHeight;
+list_main.onscroll = loadMore;
+function loadMore() {
+	if (hl_height + pd_height - (this.scrollTop + view_height) < 200) {
+		list_main.onscroll = null;
+		(0, _tools.ajax)({
+			url: '../../server/hotel.json',
+			callback: function callback(data) {
+				var star = [0, 2, 3, 4, 5];
+				function random(max, min) {
+					return Math.floor(Math.random() * (max - min + 1)) + min;
+				}
+				var data_list = data.data;
+
+				data_list = data_list.map(function (value, index) {
+					value.rank = star[random(4, 0)];
+					document.querySelector('.hotel-list').appendChild(tpl('dom', value.name, value.price, value.addr, value.district, value.rank));
+					return tpl('dom', value.name, value.price, value.addr, value.district, value.rank);
+				});
+				hl_height = document.querySelector('.hotel-list').offsetHeight;
+
+				list_main.onscroll = loadMore;
+				//重新排序
+				//arrangeFn('up');
+			}
+		});
+	}
+}
 
 //filter区域的显示和隐藏
 var filterWrap = document.querySelector('.filter');
@@ -430,7 +474,7 @@ function resetArrow(target) {
 		filter_nav_li[i].classList.remove('icon-icon05-copy-copy');
 	}
 }
-
+//点击底部筛选导航
 filter_nav.addEventListener('click', function (e) {
 
 	var target = e.target;
@@ -451,7 +495,7 @@ filter_nav.addEventListener('click', function (e) {
 		filter_area.style.transform = 'translateX(' + -(target.getAttribute('index') * 25) + '%)';
 	}
 }, false);
-
+//点击筛选区域，获取具体的筛选信息
 masker.addEventListener('click', function (e) {
 	var target = e.target;
 	//控制CheckBox的功能
@@ -473,16 +517,33 @@ masker.addEventListener('click', function (e) {
 			console.log('我不知你点哪里了...');
 	}
 
-	if (target.classList.contains('checkbox')) {
-		target.className = 'checkbox-checked';
+	if (target.parentNode.classList.contains('arrange')) {
+		if (target.classList.contains('checkbox')) {
+			var siblings = target.parentNode.childNodes;
+			for (var i = 0; i < siblings.length; i++) {
+				if (siblings[i].nodeType != 3) {
+					siblings[i].className = 'checkbox';
+				}
+			}
+			target.className = 'checkbox-checked';
+			var arrange = target.getAttribute('arrange');
+
+			arrangeFn(arrange);
+		}
 	} else {
-		target.className = 'checkbox';
+		if (target.classList.contains('checkbox')) {
+			target.className = 'checkbox-checked';
+		} else {
+			target.className = 'checkbox';
+		}
 	}
+
 	//collector()收集所有CheckBox选中的信息,返回筛选信息
 	//调用过滤逻辑
 	screen(collector());
 }, false);
 
+//收集信息函数
 function collector() {
 	var region = document.querySelector('.masker .region').querySelectorAll('p.checkbox-checked');
 	var rank = document.querySelector('.masker .rank').querySelectorAll('p.checkbox-checked');
@@ -505,10 +566,27 @@ function collector() {
 
 	return screenItems;
 }
+//排序函数
+function arrangeFn(direction) {
+	var wrap = document.querySelector('.hotel-list');
+	var dls = Array.from(wrap.querySelectorAll('dl'));
+
+	dls = dls.sort(function (a, b) {
+		if (direction == 'up') {
+			return a.getAttribute('data-price') - b.getAttribute('data-price');
+		} else {
+			return b.getAttribute('data-price') - a.getAttribute('data-price');
+		}
+	});
+
+	dls.forEach(function (ele, index) {
+		wrap.appendChild(ele);
+	});
+}
 
 //筛选逻辑的实现
 function screen(obj) {
-	console.log(obj);
+
 	//Object {region: Array[1], rank: Array[1]}
 	var wrap = document.querySelector('.hotel-list');
 	var dls = wrap.querySelectorAll('dl');

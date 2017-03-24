@@ -23,19 +23,17 @@ document.querySelector('.modify-date').onclick=function(){
 	loading.startLoading('.container');
 
 //请求列表数据
-
-
 let wait = new Promise(function(resolve,reject){
 	ajax({
 		url:'../../server/hotel.json',
 		callback:function(data){
-			var arr=[0,2,3,4,5];
+			let star=[0,2,3,4,5];
 			function random(max,min){
 				return Math.floor(Math.random()*(max-min+1))+min
 			}
 
 			data.data = data.data.map((value,index)=>{
-				value.rank = arr[random(4,0)];
+				value.rank = star[random(4,0)];
 				return value;
 			})
 			
@@ -46,8 +44,10 @@ let wait = new Promise(function(resolve,reject){
 
 
 //列表模板
-function tpl(name,price,addr,district,rank){
-	return `<dl data-region="${district}" data-rank="${rank}">
+function tpl(type,name,price,addr,district,rank){
+	if(type=='string'){
+
+			return `<dl data-region="${district}" data-rank="${rank}" data-price="${price}">
 				<dt><img src="../img/fullimage1.jpg" alt=""></dt>
 				<dd>
 					<h4>${name}</h4>
@@ -65,21 +65,83 @@ function tpl(name,price,addr,district,rank){
 						<span class="distance"> </span>
 					</p>
 				</dd>
-			</dl>`	
+					</dl>`	
+	}
+	if(type=='dom'){
+		let ele =document.createElement('dl');
+		ele.setAttribute('data-rank',rank);
+		ele.setAttribute('data-price',price);
+		ele.setAttribute('data-region',district);
+		ele.innerHTML = `<dt><img src="../img/fullimage1.jpg" alt=""></dt>
+				<dd>
+					<h4>${name}</h4>
+					<p>
+						<span class="point">4.7分</span>
+						<span class="price"><em>￥${price}</em><small>起</small></span>
+					</p>
+					<p>
+						<span class="rank">${rank}星</span>
+						<span class="icon iconfont icon-wifi"></span>
+						<span class="icon iconfont icon-p"></span>
+					</p>
+					<p>
+						<span class="location">${addr}</span>
+						<span class="distance"> </span>
+					</p>
+				</dd>`;
+		return ele		
+	}	
 }
-
+//根据模板渲染数据
 wait.then(function(data){
 	
 	let data_list = data.data;
 
 	data_list = data_list.map((value,index)=>{
-		return tpl(value.name,value.price,value.addr,value.district,value.rank)
+		return tpl('string',value.name,value.price,value.addr,value.district,value.rank)
 	})
 	//数据返回停止加载动画
 	loading.stopLoading();
 	//将渲染完成的list数据添加至列表
 	document.querySelector('.hotel-list').innerHTML = data_list.join('');
+
+	hl_height = document.querySelector('.hotel-list').offsetHeight;	
 })
+//滚动加载更多
+//
+let hl_height = 0;
+let pd_height = document.querySelector('.pick-date').offsetHeight;
+let list_main = document.querySelector('.list-main');
+let view_height = list_main.offsetHeight;
+list_main.onscroll=loadMore;
+function loadMore(){
+	if(hl_height+pd_height - (this.scrollTop+view_height) < 200){
+		list_main.onscroll=null;
+		ajax({
+			url:'../../server/hotel.json',
+			callback:function(data){
+				let star=[0,2,3,4,5];
+				function random(max,min){
+					return Math.floor(Math.random()*(max-min+1))+min
+				}
+				let data_list = data.data; 		
+				
+				data_list = data_list.map((value,index)=>{
+					value.rank = star[random(4,0)];
+					document.querySelector('.hotel-list').appendChild(tpl('dom',value.name,value.price,value.addr,value.district,value.rank))
+					return tpl('dom',value.name,value.price,value.addr,value.district,value.rank);
+				});
+				hl_height = document.querySelector('.hotel-list').offsetHeight;	
+
+				list_main.onscroll=loadMore;
+				//重新排序
+				//arrangeFn('up');
+			}
+		})		
+	}	
+
+
+}
 
 //filter区域的显示和隐藏
 let filterWrap = document.querySelector('.filter');
@@ -96,7 +158,7 @@ function resetArrow(target){
 		filter_nav_li[i].classList.remove('icon-icon05-copy-copy');
 	}	
 }
-
+//点击底部筛选导航
 filter_nav.addEventListener('click',(e)=>{
 		
 	let target = e.target;
@@ -119,7 +181,7 @@ filter_nav.addEventListener('click',(e)=>{
 
 	}
 },false)
-
+//点击筛选区域，获取具体的筛选信息
 masker.addEventListener('click',(e)=>{
 	let target = e.target;
 	//控制CheckBox的功能
@@ -139,16 +201,38 @@ masker.addEventListener('click',(e)=>{
 		default: console.log('我不知你点哪里了...')						
 	}
 
-	if(target.classList.contains('checkbox')){
-		target.className='checkbox-checked';
+
+	if(target.parentNode.classList.contains('arrange')){
+		if(target.classList.contains('checkbox')){
+			let siblings = target.parentNode.childNodes;
+			for(let i=0;i<siblings.length;i++){
+				if(siblings[i].nodeType!=3){
+					siblings[i].className = 'checkbox';	
+				}
+			}
+			target.className='checkbox-checked';
+			let arrange = target.getAttribute('arrange');
+
+			arrangeFn(arrange);
+
+		}
+
 	}else{
-		target.className='checkbox';
+		if(target.classList.contains('checkbox')){
+			target.className='checkbox-checked';
+		}else{
+			target.className='checkbox';
+		}	
 	}
+	
+
+
 	//collector()收集所有CheckBox选中的信息,返回筛选信息
 	//调用过滤逻辑
 	screen(collector());
 },false)
 
+//收集信息函数
 function collector(){
 	let region = document.querySelector('.masker .region').querySelectorAll('p.checkbox-checked');
 	let rank = document.querySelector('.masker .rank').querySelectorAll('p.checkbox-checked');
@@ -171,10 +255,29 @@ function collector(){
 	
 	return screenItems;
 }
+//排序函数
+function arrangeFn(direction){
+	let wrap = document.querySelector('.hotel-list');
+	let dls = Array.from(wrap.querySelectorAll('dl'));
+
+	dls = dls.sort(function(a,b){
+		if(direction=='up'){
+			return a.getAttribute('data-price')-b.getAttribute('data-price')		
+		}else{
+			return b.getAttribute('data-price')-a.getAttribute('data-price')		
+		}
+		
+	})
+	
+	dls.forEach((ele,index)=>{
+		wrap.appendChild(ele)	
+	})
+	
+}
 
 //筛选逻辑的实现
 function screen(obj){
-	console.log(obj);
+	
 	//Object {region: Array[1], rank: Array[1]}
 	let wrap = document.querySelector('.hotel-list');
 	let dls = wrap.querySelectorAll('dl');
