@@ -184,19 +184,11 @@ function screen(obj){
 
 	//把符合条件的项筛选出来;
 	for(let i=0; i<dls.length; i++){
-
-		/*let region = dls[i].getAttribute('data-region');
-		let rank = dls[i].getAttribute('data-rank');
-*/
-
 		for(let k in obj){
 			if(obj[k].indexOf(dls[i].getAttribute('data-'+k))==-1){
 				dls[i].classList.add('none')
 			}	
-
 		}
-
-		
 	}
 }
 

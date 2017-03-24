@@ -518,11 +518,6 @@ function screen(obj) {
 
 	//把符合条件的项筛选出来;
 	for (var _i2 = 0; _i2 < dls.length; _i2++) {
-
-		/*let region = dls[i].getAttribute('data-region');
-  let rank = dls[i].getAttribute('data-rank');
-  */
-
 		for (var k in obj) {
 			if (obj[k].indexOf(dls[_i2].getAttribute('data-' + k)) == -1) {
 				dls[_i2].classList.add('none');
