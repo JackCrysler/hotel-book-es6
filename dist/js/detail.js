@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -5216,462 +5216,53 @@ exports.Swiper = Swiper;
 
 /***/ }),
 /* 2 */,
-/* 3 */
+/* 3 */,
+/* 4 */,
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Calendar = exports.Calendar = function () {
-	function Calendar(options) {
-		_classCallCheck(this, Calendar);
-
-		var defaults = {
-			initDate: new Date(),
-			callback: function callback() {}
-		};
-		options = Object.assign({}, defaults, options);
-
-		this.calendarPlugin = document.querySelector('#calendar-plugin');
-
-		var year = options.initDate.getFullYear();
-		var month = options.initDate.getMonth() + 1;
-
-		this.year = year;
-		this.month = month;
-
-		this.callback = options.callback;
-		//渲染初始月
-		this.render(year, month);
-		//更新标题年/月
-		this.updateTitle(year, month);
-		//绑定事件
-		this.bindEvent();
-	}
-
-	_createClass(Calendar, [{
-		key: 'updateTitle',
-		value: function updateTitle(year, month) {
-			this.calendarPlugin.querySelector('.calendar-title h3').innerHTML = year + '年' + month + '月';
-		}
-	}, {
-		key: 'daysInOneMonth',
-		value: function daysInOneMonth(year, month) {
-			var d31 = [1, 3, 5, 7, 8, 10, 12],
-			    d30 = [4, 6, 9, 11],
-			    days = 31;
-
-			month = month * 1;
-			year = year * 1;
-
-			if (month == 2) {
-				if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
-					days = 29;
-				} else {
-					days = 28;
-				}
-			} else {
-				if (d31.indexOf(month) > -1) {
-					days = 31;
-				} else if (d30.indexOf(month) > -1) {
-					days = 30;
-				}
-			}
-
-			return days;
-		}
-	}, {
-		key: 'startInOneMonth',
-		value: function startInOneMonth(year, month) {
-			var date = new Date(year + '/' + month + '/' + 1);
-			//返回这个月1号对应的星期值[0,6]
-			return date.getDay();
-		}
-	}, {
-		key: 'renderPrevMonth',
-		value: function renderPrevMonth(year, month) {
-			var prevMonth = new Date(year + '/' + (month - 1));
-			var prevMonthDays = this.daysInOneMonth(prevMonth.getFullYear(), prevMonth.getMonth() + 1);
-			var leftDays = this.startInOneMonth(year, month);
-			var str = '';
-			leftDays -= 1;
-			while (leftDays >= 0) {
-				str += '<span class="calendar-day to-gray">' + (prevMonthDays - leftDays) + '</span>';
-				leftDays--;
-			}
-
-			return str;
-		}
-	}, {
-		key: 'renderCurrentMonth',
-		value: function renderCurrentMonth(year, month) {
-			var str = '',
-			    start = 1;
-			var days = this.daysInOneMonth(year, month);
-			while (start <= days) {
-				str += '<span class="calendar-day">' + start + '</span>';
-				start++;
-			}
-			return str;
-		}
-	}, {
-		key: 'render',
-		value: function render(year, month) {
-			var container = this.calendarPlugin.querySelector('.calendar-month');
-			container.innerHTML = this.renderPrevMonth(year, month) + this.renderCurrentMonth(year, month);
-		}
-	}, {
-		key: 'bindEvent',
-		value: function bindEvent() {
-			var _this = this;
-
-			this.calendarPlugin.onclick = function (e) {
-				var target = e.target;
-				if (target.classList.contains('back')) {
-					_this.hide();
-				}
-				if (target.classList.contains('to-gray')) {
-					return;
-				}
-				if (target.classList.contains('calendar-day')) {
-					_this.callback(_this.year, _this.month, target.innerHTML);
-					_this.srcElement.innerHTML = _this.year + '-' + _this.month + '-' + target.innerHTML;
-					_this.hide();
-				}
-				if (target.classList.contains('prev')) {
-					var date = new Date(_this.year, _this.month - 1 - 1);
-					var prevYear = date.getFullYear();
-					var prevMonth = date.getMonth() + 1;
-					_this.render(prevYear, prevMonth);
-					_this.year = prevYear;
-					_this.month = prevMonth;
-					_this.updateTitle(prevYear, prevMonth);
-				}
-				if (target.classList.contains('next')) {
-					var _date = new Date(_this.year, _this.month - 1 + 1);
-					var nextYear = _date.getFullYear();
-					var nextMonth = _date.getMonth() + 1;
-					_this.render(nextYear, nextMonth);
-					_this.year = nextYear;
-					_this.month = nextMonth;
-					_this.updateTitle(nextYear, nextMonth);
-				}
-			};
-		}
-	}, {
-		key: 'show',
-		value: function show(element) {
-			this.srcElement = element;
-			this.calendarPlugin.classList.add('plugin-active');
-		}
-	}, {
-		key: 'hide',
-		value: function hide() {
-			this.calendarPlugin.classList.remove('plugin-active');
-		}
-	}]);
-
-	return Calendar;
-}();
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var City = exports.City = function () {
-    function City(options) {
-        _classCallCheck(this, City);
-
-        var defaults = {
-            data: []
-        };
-        var opt = Object.assign({}, defaults, options);
-
-        this.opt = opt;
-
-        this.cityPlugin = document.querySelector('#city-plugin');
-
-        this.alphabetWrap = this.cityPlugin.querySelector('.alphabet');
-
-        this.citiesFrame = document.querySelector('.city .cities-frame');
-
-        this.render(opt.data);
-
-        this.collectCityHeight();
-        //bind event
-        this.bindEvent();
-    }
-
-    _createClass(City, [{
-        key: 'render',
-        value: function render(cityList) {
-
-            //render alphabet
-            var alphabetWrap = this.alphabetWrap;
-            var citiesFrame = this.citiesFrame;
-            var empty_str = '',
-                city_str = '';
-            cityList.forEach(function (value, index) {
-                empty_str += '<span alpha="' + value.alpha + '">' + value.alpha + '</span>';
-
-                city_str += '<div>\n                <div class="split-line" alpha="' + value.alpha + '">' + value.alpha + '</div>\n                <ul class="list">\n                ' + value.data.map(function (item, idx) {
-                    return '<li>' + item[0] + '</li>';
-                }).join('') + '\n                </ul>\n            </div>';
-            });
-            alphabetWrap.innerHTML = empty_str;
-            citiesFrame.innerHTML = city_str;
-        }
-    }, {
-        key: 'collectCityHeight',
-        value: function collectCityHeight() {
-            var alphaDom = document.querySelectorAll('[alpha]');
-            var height_info = {};
-            Array.from(alphaDom).forEach(function (dom, index) {
-                height_info[dom.getAttribute('alpha')] = dom.offsetTop;
-            });
-            this.heightInfo = height_info;
-        }
-    }, {
-        key: 'bindEvent',
-        value: function bindEvent() {
-            var _this = this;
-
-            this.cityPlugin.addEventListener('click', function (e) {
-                var target = e.target;
-                if (target.tagName == 'SPAN') {
-                    _this.cityPlugin.scrollTop = _this.heightInfo[target.getAttribute('alpha')];
-                }
-                if (target.tagName == 'LI') {
-
-                    _this.hide();
-                    _this.opt.callback(target.innerHTML);
-                }
-
-                if (target.tagName == 'SPAN' && target.classList.contains('back')) {
-                    _this.hide();
-                }
-            }, false);
-        }
-    }, {
-        key: 'show',
-        value: function show() {
-            this.cityPlugin.classList.add('plugin-active');
-            this.cityPlugin.scrollTop = 0;
-        }
-    }, {
-        key: 'hide',
-        value: function hide() {
-            this.cityPlugin.classList.remove('plugin-active');
-        }
-    }]);
-
-    return City;
-}();
-
-/***/ }),
-/* 5 */,
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _swiper = __webpack_require__(1);
 
 var _tools = __webpack_require__(0);
 
-var _city2 = __webpack_require__(4);
+var _swiper = __webpack_require__(1);
 
-var _calendar = __webpack_require__(3);
+//查看图集绑定事件
+var checkImg = document.querySelector('.check-all-img');
+var allImg = document.querySelector('.all-img');
+var imgWrap = document.querySelector('.all-img-wrap');
+checkImg.onclick = function () {
+	allImg.classList.remove('none');
 
-var _ref = [document.querySelector('.banner ul'), ''],
-    banner = _ref[0],
-    str = _ref[1];
+	if (imgWrap.querySelector('ul')) return;
 
+	_tools.loading.startLoading(imgWrap);
 
-var promise = new Promise(function (resolve, reject) {
-    //请求banner图片地址
-    (0, _tools.ajax)({
-        url: "../../server/banner.json",
-        callback: function callback(data) {
-            resolve(data);
-        }
-    });
-});
+	//请求数据
 
-promise.then(function (data) {
-    //渲染banner结构
-    data.forEach(function (item, index) {
-        str += '<li class="swiper-slide" style="background: url(' + item.url + ');background-size: cover;">\n                <a href="" title="' + item.title + '"></a>\n              </li>';
-    });
+	(0, _tools.ajax)({
+		url: '../../server/banner.json',
+		callback: function callback(data) {
 
-    banner.innerHTML = str;
+			_tools.loading.stopLoading();
 
-    //实例化swiper
-    var banner_swipe = new _swiper.Swiper('.banner', {
-        autoplay: 3000,
-        loop: true
-    });
-});
+			var str = '';
+			data.forEach(function (value, index) {
+				str += '<li class="swiper-slide"><img src="' + value.url + '" alt="" /></li>';
+			});
+			imgWrap.innerHTML = '<ul class="swiper-wrapper">' + str + '</ul>';
 
-var city_data = new Promise(function (resolve, reject) {
-    //请求城市数据
-    (0, _tools.ajax)({
-        url: '../../server/cities.json',
-        callback: function callback(data) {
-            resolve(data);
-        }
-    });
-});
-
-var checkIn = document.querySelector('.check-in-hotel'),
-    city_module = void 0;
-city_data.then(function (data) {
-    //实例化城市组件
-    city_module = new _city2.City({
-        data: data,
-        callback: function callback(city) {
-            //在组件的回调中处理选择的数据
-            checkIn.querySelector('.main-item-massage').innerHTML = city;
-        }
-    });
-});
-
-//显示城市组件，绑定事件
-checkIn.addEventListener('click', function () {
-    //触发城市组件的显示
-    city_module.show();
-}, false);
-//使用腾讯地理定位api实现定位
-checkIn.querySelector('.location').onclick = function (e) {
-    e.stopPropagation();
-    //实现定位功能
-    var glt = navigator.geolocation;
-
-    /*jsonp('http://apis.map.qq.com/ws/geocoder/v1/?location='+20+','+110+'&key=7SFBZ-SLNRP-UTZDY-VMH2X-NQG5T-D3FRF&output=jsonp',function(data){
-        console.log(data)
-    })*/
-
-    if (glt) {
-        //watchPosition
-        glt.getCurrentPosition(function (postion) {
-            var coords = position.coords;
-
-            (0, _tools.jsonp)('http://apis.map.qq.com/ws/geocoder/v1/?location=' + coords.latitude + ',' + coords.longitude + '&key=7SFBZ-SLNRP-UTZDY-VMH2X-NQG5T-D3FRF&output=jsonp', function (data) {
-                console.log(data);
-            });
-
-            //alert(coords.latitude,coords.longitude);
-        }, function (error) {
-
-            switch (error.code) {
-                case error.TIMEOUT:
-                    console.log("A timeout occured! Please try again!");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    console.log('We can\'t detect your location. Sorry!');
-                    break;
-                case error.PERMISSION_DENIED:
-                    console.log('Please allow geolocation access for this to work.');
-                    break;
-                case error.UNKNOWN_ERROR:
-                    console.log('An unknown error occured!');
-                    break;
-            }
-
-            //跨域请求腾讯地图api，通过ip获取地址信息
-            (0, _tools.jsonp)('http://apis.map.qq.com/ws/location/v1/ip?key=7SFBZ-SLNRP-UTZDY-VMH2X-NQG5T-D3FRF&output=jsonp', function (data) {});
-        }, {
-            // 指示浏览器获取高精度的位置，默认为false
-            enableHighAccuracy: true,
-            // 指定获取地理位置的超时时间，默认不限时，单位为毫秒
-            timeout: 5000,
-            // 最长有效期，在重复获取地理位置时，此参数指定多久再次获取位置。
-            maximumAge: 3000
-        });
-    } else {
-
-        alert("Your browser does not support Geolocation!");
-    }
+			setTimeout(function () {
+				new _swiper.Swiper(imgWrap, {});
+			}, 10);
+		}
+	});
 };
 
-//初始化首页默认入住日期
-var checkInDate = document.querySelector('.check-in-date .main-item-massage');
-var current_date = new Date();
-var cYear = current_date.getFullYear();
-var cMonth = current_date.getMonth() + 1;
-var cDay = current_date.getDate();
-var cTime = current_date.getHours();
-
-if (cTime > 16) {
-    current_date = new Date(cYear + '-' + cMonth + '-' + (cDay + 1));
-    cYear = current_date.getFullYear();
-    cMonth = current_date.getMonth() + 1;
-    cDay = current_date.getDate();
-}
-checkInDate.innerHTML = cYear + '-' + cMonth + '-' + cDay;
-
-var checkOutDate = document.querySelector('.check-out-date .main-item-massage');
-var check_out_date = new Date(cYear + '-' + cMonth + '-' + (cDay + 1));
-var oYear = check_out_date.getFullYear();
-var oMonth = check_out_date.getMonth() + 1;
-var oDay = check_out_date.getDate();
-checkOutDate.innerHTML = oYear + '-' + oMonth + '-' + oDay;
-
-//实例化日历组件
-var calendar = new _calendar.Calendar({
-    initDate: new Date(),
-    callback: function callback(y, m, d) {
-        //checkInDate.innerHTML = y+'-'+m+'-'+d;
-        console.log(y + '-' + m + '-' + d);
-    }
-});
-//给入住日dom元素绑定事件，触发日历组件
-checkInDate.addEventListener('click', function () {
-    calendar.show(checkInDate);
-}, false);
-//给离店日dom元素绑定事件，触发日历组件
-checkOutDate.addEventListener('click', function () {
-    calendar.show(checkOutDate);
-}, false);
-
-//搜索产品
-//
-document.querySelector('.search').onclick = function () {
-
-    var _city = checkIn.querySelector('.main-item-massage').innerHTML,
-        _checkIn = checkInDate.innerHTML,
-        _checkOut = checkOutDate.innerHTML,
-        _hotel = document.querySelector('.hotel-name').value;
-
-    var str = '?city=' + _city + '&checkInDate=' + _checkIn + '&checkOutDate=' + _checkOut;
-
-    if (_hotel) {
-        str += 'hotelName=' + _hotel;
-    }
-
-    window.location.href = 'list.html' + encodeURI(str);
+allImg.onclick = function () {
+	allImg.classList.add('none');
 };
-console.log('1234');
 
 /***/ })
 /******/ ]);

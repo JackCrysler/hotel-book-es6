@@ -44,10 +44,10 @@ let wait = new Promise(function(resolve,reject){
 
 
 //列表模板
-function tpl(type,name,price,addr,district,rank){
+function tpl(type,name,price,addr,district,rank,index){
 	if(type=='string'){
 
-			return `<dl data-region="${district}" data-rank="${rank}" data-price="${price}">
+			return `<dl data-id="${index+1}" data-region="${district}" data-rank="${rank}" data-price="${price}">
 				<dt><img src="../img/fullimage1.jpg" alt=""></dt>
 				<dd>
 					<h4>${name}</h4>
@@ -72,6 +72,7 @@ function tpl(type,name,price,addr,district,rank){
 		ele.setAttribute('data-rank',rank);
 		ele.setAttribute('data-price',price);
 		ele.setAttribute('data-region',district);
+		ele.setAttribute('data-id',index+1);
 		ele.innerHTML = `<dt><img src="../img/fullimage1.jpg" alt=""></dt>
 				<dd>
 					<h4>${name}</h4>
@@ -98,7 +99,7 @@ wait.then(function(data){
 	let data_list = data.data;
 
 	data_list = data_list.map((value,index)=>{
-		return tpl('string',value.name,value.price,value.addr,value.district,value.rank)
+		return tpl('string',value.name,value.price,value.addr,value.district,value.rank,index)
 	})
 	//数据返回停止加载动画
 	loading.stopLoading();
@@ -108,7 +109,7 @@ wait.then(function(data){
 	hl_height = document.querySelector('.hotel-list').offsetHeight;	
 })
 //滚动加载更多
-//
+
 let hl_height = 0;
 let pd_height = document.querySelector('.pick-date').offsetHeight;
 let list_main = document.querySelector('.list-main');
@@ -212,11 +213,10 @@ masker.addEventListener('click',(e)=>{
 			}
 			target.className='checkbox-checked';
 			let arrange = target.getAttribute('arrange');
-
+			//排序
 			arrangeFn(arrange);
 
 		}
-
 	}else{
 		if(target.classList.contains('checkbox')){
 			target.className='checkbox-checked';
@@ -294,4 +294,16 @@ function screen(obj){
 		}
 	}
 }
+
+
+//去详情页
+document.querySelector('.hotel-list').onclick = function(e){
+	let target = e.target;
+	while(target.tagName!='DL'){
+		target = target.parentNode;
+	}
+	let hotel_id = target.getAttribute('data-id');
+	window.location.href = 'detail.html?hotel_id='+hotel_id;
+}
+
 

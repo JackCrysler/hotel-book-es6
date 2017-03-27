@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -344,7 +344,8 @@ var Calendar = exports.Calendar = function () {
 /* 3 */,
 /* 4 */,
 /* 5 */,
-/* 6 */
+/* 6 */,
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -396,16 +397,17 @@ var wait = new Promise(function (resolve, reject) {
 });
 
 //列表模板
-function tpl(type, name, price, addr, district, rank) {
+function tpl(type, name, price, addr, district, rank, index) {
 	if (type == 'string') {
 
-		return '<dl data-region="' + district + '" data-rank="' + rank + '" data-price="' + price + '">\n\t\t\t\t<dt><img src="../img/fullimage1.jpg" alt=""></dt>\n\t\t\t\t<dd>\n\t\t\t\t\t<h4>' + name + '</h4>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="point">4.7\u5206</span>\n\t\t\t\t\t\t<span class="price"><em>\uFFE5' + price + '</em><small>\u8D77</small></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="rank">' + rank + '\u661F</span>\n\t\t\t\t\t\t<span class="icon iconfont icon-wifi"></span>\n\t\t\t\t\t\t<span class="icon iconfont icon-p"></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="location">' + addr + '</span>\n\t\t\t\t\t\t<span class="distance"> </span>\n\t\t\t\t\t</p>\n\t\t\t\t</dd>\n\t\t\t\t\t</dl>';
+		return '<dl data-id="' + (index + 1) + '" data-region="' + district + '" data-rank="' + rank + '" data-price="' + price + '">\n\t\t\t\t<dt><img src="../img/fullimage1.jpg" alt=""></dt>\n\t\t\t\t<dd>\n\t\t\t\t\t<h4>' + name + '</h4>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="point">4.7\u5206</span>\n\t\t\t\t\t\t<span class="price"><em>\uFFE5' + price + '</em><small>\u8D77</small></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="rank">' + rank + '\u661F</span>\n\t\t\t\t\t\t<span class="icon iconfont icon-wifi"></span>\n\t\t\t\t\t\t<span class="icon iconfont icon-p"></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="location">' + addr + '</span>\n\t\t\t\t\t\t<span class="distance"> </span>\n\t\t\t\t\t</p>\n\t\t\t\t</dd>\n\t\t\t\t\t</dl>';
 	}
 	if (type == 'dom') {
 		var ele = document.createElement('dl');
 		ele.setAttribute('data-rank', rank);
 		ele.setAttribute('data-price', price);
 		ele.setAttribute('data-region', district);
+		ele.setAttribute('data-id', index + 1);
 		ele.innerHTML = '<dt><img src="../img/fullimage1.jpg" alt=""></dt>\n\t\t\t\t<dd>\n\t\t\t\t\t<h4>' + name + '</h4>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="point">4.7\u5206</span>\n\t\t\t\t\t\t<span class="price"><em>\uFFE5' + price + '</em><small>\u8D77</small></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="rank">' + rank + '\u661F</span>\n\t\t\t\t\t\t<span class="icon iconfont icon-wifi"></span>\n\t\t\t\t\t\t<span class="icon iconfont icon-p"></span>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<span class="location">' + addr + '</span>\n\t\t\t\t\t\t<span class="distance"> </span>\n\t\t\t\t\t</p>\n\t\t\t\t</dd>';
 		return ele;
 	}
@@ -416,7 +418,7 @@ wait.then(function (data) {
 	var data_list = data.data;
 
 	data_list = data_list.map(function (value, index) {
-		return tpl('string', value.name, value.price, value.addr, value.district, value.rank);
+		return tpl('string', value.name, value.price, value.addr, value.district, value.rank, index);
 	});
 	//数据返回停止加载动画
 	_tools.loading.stopLoading();
@@ -426,7 +428,7 @@ wait.then(function (data) {
 	hl_height = document.querySelector('.hotel-list').offsetHeight;
 });
 //滚动加载更多
-//
+
 var hl_height = 0;
 var pd_height = document.querySelector('.pick-date').offsetHeight;
 var list_main = document.querySelector('.list-main');
@@ -527,7 +529,7 @@ masker.addEventListener('click', function (e) {
 			}
 			target.className = 'checkbox-checked';
 			var arrange = target.getAttribute('arrange');
-
+			//排序
 			arrangeFn(arrange);
 		}
 	} else {
@@ -603,6 +605,16 @@ function screen(obj) {
 		}
 	}
 }
+
+//去详情页
+document.querySelector('.hotel-list').onclick = function (e) {
+	var target = e.target;
+	while (target.tagName != 'DL') {
+		target = target.parentNode;
+	}
+	var hotel_id = target.getAttribute('data-id');
+	window.location.href = 'detail.html?hotel_id=' + hotel_id;
+};
 
 /***/ })
 /******/ ]);
