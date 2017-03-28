@@ -4,7 +4,8 @@ module.exports = {
 	entry:{
 		'index':'./src/js/index.js',
         'list':'./src/js/list.js',
-        'detail':'./src/js/detail.js'
+        'detail':'./src/js/detail.js',
+        'order':'./src/js/order.js'
 	},
 	output:{
 		path:'dist/js',

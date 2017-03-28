@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -167,10 +167,39 @@ var loadingAnimate = function loadingAnimate() {
 };
 var loading = new loadingAnimate();
 
+var element = function element(cls) {
+	var ele = document.querySelectorAll(cls);
+	if (!Node.prototype.bind) {
+		Node.prototype.bind = function (event, ele, callback) {
+			this.addEventListener('click', function (e) {
+				if (e.target.tagName.toLowerCase() == ele) {
+					callback(e, ele);
+				}
+			}, false);
+		};
+	}
+	if (!NodeList.prototype.bind) {
+		NodeList.prototype.bind = function (event, ele, callback) {
+			this.forEach(function (ele, index) {
+				ele.addEventListener('click', function () {
+					callback(ele, index);
+				}, false);
+			});
+		};
+	}
+
+	if (ele.length == 1) {
+		return ele[0];
+	} else {
+		return ele;
+	}
+};
+
 exports.ajax = ajax;
 exports.jsonp = jsonp;
 exports.getUrlParams = getUrlParams;
 exports.loading = loading;
+exports.element = element;
 
 /***/ }),
 /* 1 */
@@ -5489,7 +5518,8 @@ var City = exports.City = function () {
 
 /***/ }),
 /* 5 */,
-/* 6 */
+/* 6 */,
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

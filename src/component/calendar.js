@@ -5,7 +5,7 @@ export class Calendar{
 			callback:function(){
 
 			}
-		}
+		};
 		options = Object.assign({},defaults,options);
 
 		this.calendarPlugin = document.querySelector('#calendar-plugin');

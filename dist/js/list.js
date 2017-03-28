@@ -63,11 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -167,14 +168,43 @@ var loadingAnimate = function loadingAnimate() {
 };
 var loading = new loadingAnimate();
 
+var element = function element(cls) {
+	var ele = document.querySelectorAll(cls);
+	if (!Node.prototype.bind) {
+		Node.prototype.bind = function (event, ele, callback) {
+			this.addEventListener('click', function (e) {
+				if (e.target.tagName.toLowerCase() == ele) {
+					callback(e, ele);
+				}
+			}, false);
+		};
+	}
+	if (!NodeList.prototype.bind) {
+		NodeList.prototype.bind = function (event, ele, callback) {
+			this.forEach(function (ele, index) {
+				ele.addEventListener('click', function () {
+					callback(ele, index);
+				}, false);
+			});
+		};
+	}
+
+	if (ele.length == 1) {
+		return ele[0];
+	} else {
+		return ele;
+	}
+};
+
 exports.ajax = ajax;
 exports.jsonp = jsonp;
 exports.getUrlParams = getUrlParams;
 exports.loading = loading;
+exports.element = element;
 
 /***/ }),
-/* 1 */,
-/* 2 */
+
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -341,11 +371,8 @@ var Calendar = exports.Calendar = function () {
 }();
 
 /***/ }),
-/* 3 */,
-/* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */
+
+/***/ 8:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -617,4 +644,5 @@ document.querySelector('.hotel-list').onclick = function (e) {
 };
 
 /***/ })
-/******/ ]);
+
+/******/ });

@@ -4,9 +4,7 @@ function ajax(options){
 		type:'get',
 		url:'',
 		params:null,
-		callback:function(){
-
-		}
+		callback:function(){}
 	};
 	let obj = Object.assign({},defaults,options);
 
@@ -98,7 +96,36 @@ let loadingAnimate = function(){
 	this.stopLoading = function(){
 		this.parentDom.removeChild(load)
 	}
-}	
+};
 let loading = new loadingAnimate();
 
-export { ajax, jsonp, getUrlParams, loading }
+let element = function (cls) {
+	let ele = document.querySelectorAll(cls);
+	if(!Node.prototype.bind){
+        Node.prototype.bind = function (event,ele,callback) {
+            this.addEventListener('click',(e)=>{
+            	if(e.target.tagName.toLowerCase()==ele){
+                    callback(e,ele);
+				}
+            },false);
+        };
+	}
+    if(!NodeList.prototype.bind){
+        NodeList.prototype.bind = function (event,ele,callback) {
+            this.forEach((ele,index) =>{
+                ele.addEventListener('click',()=>{
+                    callback(ele,index);
+                },false);
+            });
+
+        };
+    }
+
+    if(ele.length==1){
+        return ele[0]
+    }else{
+        return ele
+    }
+};
+
+export { ajax, jsonp, getUrlParams, loading, element }

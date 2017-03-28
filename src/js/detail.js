@@ -41,3 +41,9 @@ checkImg.onclick = function(){
 allImg.onclick = function(){
 	allImg.classList.add('none');
 }
+
+
+document.querySelector('.book').onclick = function(){
+	window.location.href = 'order.html';
+}
+

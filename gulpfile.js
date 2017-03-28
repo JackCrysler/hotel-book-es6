@@ -21,7 +21,8 @@ gulp.task('sass',function(){
 gulp.task('server',['sass'],function(){
 	return gulp.src('./')
 	.pipe(server({
-		open:'src/html/index.html',
+		host:'0.0.0.0',
+		open:'http://localhost:8000/src/html/index.html',
 		directoryListing: true,
 		livereload:{
             enable: true, // need this set to true to enable livereload

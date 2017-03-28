@@ -743,6 +743,10 @@ button.swiper-pagination-bullet {
 @keyframes swiper-preloader-spin {
   100% {
     transform: rotate(360deg); } }
+#detail .book {
+  width: 30%;
+  height: 45px;
+  margin: 100px 35%; }
 #detail .img-wrap {
   position: relative; }
 #detail img {
